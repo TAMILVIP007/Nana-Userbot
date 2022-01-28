@@ -35,8 +35,7 @@ async def get_driveid(driveid):
 
 async def get_driveinfo(driveid):
 	getdrivename = BeautifulSoup(requests.get('https://drive.google.com/file/d/{}/view'.format(driveid), allow_redirects=False).content)
-	filename = cleanhtml(str(getdrivename.find('title'))).split(" - ")[0]
-	return filename
+	return cleanhtml(str(getdrivename.find('title'))).split(" - ")[0]
 
 CURRENT_COUNTER = {}
 async def callback_dl(current, total, message):
@@ -50,9 +49,7 @@ async def callback_dl(current, total, message):
 			await message.edit("__[{}] Downloading...__".format("{:.1f}%".format(current * 100 / total)))
 		except Exception as err:
 			print("Error: failed to edit message: " + str(err))
-		print("{:.1f}%".format(current * 100 / total))
-	else:
-		print("{:.1f}%".format(current * 100 / total))
+	print("{:.1f}%".format(current * 100 / total))
 
 
 @app.on_message(Filters.user("self") & Filters.command(["gdrive"], Command))
@@ -60,11 +57,10 @@ async def gdrive_stuff(client, message):
 	gauth.LoadCredentialsFile("nana/session/drive")
 	if gauth.credentials is None:
 		await message.edit("You are not logged in to your google drive account!\nCheck your saved messages for more information!")
-		gdriveclient = os.path.isfile("client_secrets.json")
-		if not gdriveclient:
-			await message.send_message(Owner, "Hello, look like you're not logged in to google drive 🙂\nI can help you to login.\n\nFirst of all, you need to activate your google drive API\n1. [Go here](https://developers.google.com/drive/api/v3/quickstart/python), click **Enable the drive API**\n2. Login to your google account (skip this if you're already logged in)\n3. After logged in, click **Enable the drive API** again, and click **Download Client Configuration** button, download that.\n4. After downloaded that file, rename `credentials.json` to `client_secrets.json`, and upload to your bot dir (not in nana dir)\nor if you're using heroku, read this alternate guide\n4a. Open `credentials.json`, copy all text from that file, then paste **GOOGLE_API_TEXT** with that text\n\nAfter that, you can go next guide by type `/gdrive`")
-		else:
+		if gdriveclient := os.path.isfile("client_secrets.json"):
 			await message.send_message(Owner, "Hello, look like you're not logged in to google drive :)\nI can help you to login.\n\n**To login Google Drive**\n1. `/gdrive` to get login URL\n2. After you're logged in, copy your Token.\n3. `/gdrive (token)` without `(` or `)` to login, and your session will saved to `nana/session/drive`.\n\nDon't share your session to someone, else they will hack your google drive account!")
+		else:
+			await message.send_message(Owner, "Hello, look like you're not logged in to google drive 🙂\nI can help you to login.\n\nFirst of all, you need to activate your google drive API\n1. [Go here](https://developers.google.com/drive/api/v3/quickstart/python), click **Enable the drive API**\n2. Login to your google account (skip this if you're already logged in)\n3. After logged in, click **Enable the drive API** again, and click **Download Client Configuration** button, download that.\n4. After downloaded that file, rename `credentials.json` to `client_secrets.json`, and upload to your bot dir (not in nana dir)\nor if you're using heroku, read this alternate guide\n4a. Open `credentials.json`, copy all text from that file, then paste **GOOGLE_API_TEXT** with that text\n\nAfter that, you can go next guide by type `/gdrive`")
 		return
 	elif gauth.access_token_expired:
 		# Refresh them if expired

@@ -47,9 +47,10 @@ MY_ALL_CHATS_RES = {}
 
 def update_chat(chat):
 	global MY_ALL_CHATS
-	if str(chat.id) in list(MY_ALL_CHATS):
-		if MY_ALL_CHATS.get(str(chat.id)) and MY_ALL_CHATS[str(chat.id)].get('name') == chat.title and MY_ALL_CHATS[str(chat.id)].get('username') == chat.username:
-			return
+	if (str(chat.id) in list(MY_ALL_CHATS) and MY_ALL_CHATS.get(str(chat.id))
+	    and MY_ALL_CHATS[str(chat.id)].get('name') == chat.title
+	    and MY_ALL_CHATS[str(chat.id)].get('username') == chat.username):
+		return
 	chat_db = SESSION.query(MyChats).get(str(chat.id))
 	if chat_db:
 		SESSION.delete(chat_db)
@@ -60,9 +61,10 @@ def update_chat(chat):
 
 def update_chat_admin(chat, status):
 	global MY_ALL_ADMINS, MY_CHATS_CREATOR, MY_CHATS_ADMINS
-	if str(chat.id) in list(MY_ALL_ADMINS):
-		if MY_ALL_ADMINS.get(str(chat.id)) and MY_ALL_ADMINS[str(chat.id)].get('name') == chat.title and MY_ALL_ADMINS[str(chat.id)].get('username') == chat.username:
-			return
+	if (str(chat.id) in list(MY_ALL_ADMINS) and MY_ALL_ADMINS.get(str(chat.id))
+	    and MY_ALL_ADMINS[str(chat.id)].get('name') == chat.title
+	    and MY_ALL_ADMINS[str(chat.id)].get('username') == chat.username):
+		return
 	chat_db = SESSION.query(MyChatsAdmin).get(str(chat.id))
 	if chat_db:
 		SESSION.delete(chat_db)
@@ -77,17 +79,18 @@ def update_chat_admin(chat, status):
 
 def update_me_restirected(chat):
 	global MY_ALL_CHATS_RES
-	if str(chat.id) in list(MY_ALL_CHATS_RES):
-		if MY_ALL_CHATS_RES.get(str(chat.id)) and MY_ALL_CHATS_RES[str(chat.id)].get('name') == chat.title and MY_ALL_CHATS_RES[str(chat.id)].get('username') == chat.username:
-			return
+	if (str(chat.id) in list(MY_ALL_CHATS_RES)
+	    and MY_ALL_CHATS_RES.get(str(chat.id))
+	    and MY_ALL_CHATS_RES[str(chat.id)].get('name') == chat.title
+	    and MY_ALL_CHATS_RES[str(chat.id)].get('username') == chat.username):
+		return
 	print("Restirected in " + chat.title)
 	MY_ALL_CHATS_RES[str(chat.id)] = {"name": chat.title, "username": chat.username}
 
 def delete_my_chat_admin(chat, status):
 	global MY_ALL_ADMINS, MY_CHATS_CREATOR, MY_CHATS_ADMINS
 	if str(chat.id) in list(MY_ALL_ADMINS):
-		chat_db = SESSION.query(MyChatsAdmin).get(str(chat.id))
-		if chat_db:
+		if chat_db := SESSION.query(MyChatsAdmin).get(str(chat.id)):
 			SESSION.delete(chat_db)
 		SESSION.commit()
 		MY_ALL_ADMINS.pop(str(chat.id))
@@ -111,33 +114,41 @@ def get_all_chats_admin():
 
 def get_all_chats_creator():
 	try:
-		MY_CREATOR = {}
 		qall = SESSION.query(MyChatsAdmin).all()
-		for x in qall:
-			if x.chat_status == "creator":
-				MY_CREATOR[x.chat_id] = {"name": x.chat_name, "username": x.chat_username}
-		return MY_CREATOR
+		return {
+		    x.chat_id: {
+		        "name": x.chat_name,
+		        "username": x.chat_username
+		    }
+		    for x in qall if x.chat_status == "creator"
+		}
 	finally:
 		SESSION.close()
 
 def get_all_chats_admin_only():
 	try:
-		MY_ADMIN = {}
 		qall = SESSION.query(MyChatsAdmin).all()
-		for x in qall:
-			if x.chat_status == "administrator":
-				MY_ADMIN[x.chat_id] = {"name": x.chat_name, "username": x.chat_username}
-		return MY_ADMIN
+		return {
+		    x.chat_id: {
+		        "name": x.chat_name,
+		        "username": x.chat_username
+		    }
+		    for x in qall if x.chat_status == "administrator"
+		}
 	finally:
 		SESSION.close()
 
 def __load_mychats():
 	global MY_ALL_CHATS
 	try:
-		MY_ALL_CHATS = {}
 		qall = SESSION.query(MyChats).all()
-		for x in qall:
-			MY_ALL_CHATS[x.chat_id] = {"name": x.chat_name, "username": x.chat_username}
+		MY_ALL_CHATS = {
+		    x.chat_id: {
+		        "name": x.chat_name,
+		        "username": x.chat_username
+		    }
+		    for x in qall
+		}
 	finally:
 		SESSION.close()
 
@@ -150,10 +161,10 @@ def __load_mychats_admin():
 		qall = SESSION.query(MyChatsAdmin).all()
 		for x in qall:
 			MY_ALL_ADMINS[x.chat_id] = {"name": x.chat_name, "username": x.chat_username}
-			if x.chat_status == "creator":
-				MY_CHATS_CREATOR[x.chat_id] = {"name": x.chat_name, "username": x.chat_username}
 			if x.chat_status == "administrator":
 				MY_CHATS_ADMINS[x.chat_id] = {"name": x.chat_name, "username": x.chat_username}
+			elif x.chat_status == "creator":
+				MY_CHATS_CREATOR[x.chat_id] = {"name": x.chat_name, "username": x.chat_username}
 	finally:
 		SESSION.close()
 

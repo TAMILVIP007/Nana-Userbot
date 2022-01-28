@@ -58,11 +58,8 @@ async def ssweb(client, message):
 	await message.edit("Please wait...")
 	args = message.text.split(None, 1)
 	teks = args[1]
-	full = False
-	if len(message.text.split()) >= 3:
-		if message.text.split(None, 2)[2] == "full":
-			full = True
-
+	full = (len(message.text.split()) >= 3
+	        and message.text.split(None, 2)[2] == "full")
 	if "http://" in teks or "https://" in teks:
 		teks = teks
 	else:
@@ -82,7 +79,7 @@ async def ssweb(client, message):
 			return
 	except:
 		pass
-	
+
 	with open("nana/cache/web.png", "wb") as stk:
 		for chunk in r:
 			stk.write(chunk)

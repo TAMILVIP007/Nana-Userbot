@@ -16,10 +16,7 @@ async def get_myself_client(client, message):
 	except ConnectionError:
 		return
 	getphoto = await client.get_profile_photos(me.id)
-	if len(getphoto) == 0:
-		getpp = None
-	else:
-		getpp = getphoto[0]
+	getpp = None if len(getphoto) == 0 else getphoto[0]
 	text = "**ℹ️ Your profile:**\n"
 	text += "First name: {}\n".format(me.first_name)
 	if me.last_name:
@@ -91,11 +88,10 @@ async def userid(client, message):
 	chat = message.chat
 	user = message.from_user
 	if message.reply_to_message:
+		user_id = message.reply_to_message.from_user.id
 		if message.reply_to_message.forward_from:
-			user_id = message.reply_to_message.from_user.id
 			user = mention_markdown(message.reply_to_message.forward_from.id, message.reply_to_message.forward_from.first_name)
 		else:
-			user_id = message.reply_to_message.from_user.id
 			user = mention_markdown(message.reply_to_message.from_user.id, message.reply_to_message.from_user.first_name)
 	elif len(message.text.split()) >= 2:
 		u = message.text.split()[1]
@@ -120,12 +116,11 @@ async def user_info(client, message):
 	chat = message.chat
 	user = message.from_user
 	if message.reply_to_message:
+		user_id = message.reply_to_message.from_user.id
 		if message.reply_to_message.forward_from:
-			user_id = message.reply_to_message.from_user.id
 			user = await client.get_users(user_id)
 			user_name = mention_markdown(message.reply_to_message.forward_from.id, message.reply_to_message.forward_from.first_name)
 		else:
-			user_id = message.reply_to_message.from_user.id
 			user = await client.get_users(user_id)
 			user_name = mention_markdown(message.reply_to_message.from_user.id, message.reply_to_message.from_user.first_name)
 	elif len(message.text.split()) >= 2 and (message.text.split(None, 1)[1].isdigit() or message.text.split(None, 1)[1][0] == "@"):
@@ -136,7 +131,7 @@ async def user_info(client, message):
 		user_id = message.from_user.id
 		user = await client.get_users(user_id)
 		user_name = mention_markdown(message.from_user.id, message.from_user.first_name)
-	
+
 	common_group = await app.get_common_chats(user_id)
 
 	text =  "**User info:**\n"

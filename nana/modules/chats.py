@@ -28,9 +28,8 @@ async def UpdateMyChatsAdmin(client, message):
 	COUNTER_DELAY[message.chat.id] += 1
 	if COUNTER_DELAY[message.chat.id] % 25 == 0:
 		get_user = await client.get_chat_member(message.chat.id, Owner)
-		if get_user['status'] != 'member' and get_user['status'] != 'restricted':
-			if DB_AVAIABLE:
-				update_chat_admin(message.chat, get_user['status'])
+		if get_user['status'] not in ['member', 'restricted'] and DB_AVAIABLE:
+			update_chat_admin(message.chat, get_user['status'])
 		if get_user['status'] == 'restricted':
 			update_me_restirected(message.chat)
 			delete_my_chat_admin(message.chat, get_user['status'])

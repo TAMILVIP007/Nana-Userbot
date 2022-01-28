@@ -23,14 +23,8 @@ MOCK_SPONGE = "https://telegra.ph/file/c2a5d11e28168a269e136.jpg"
 async def mocking_text(text):
 	teks = list(text)
 	for i, ele in enumerate(teks):
-		if i % 2 != 0:
-			teks[i] = ele.upper()
-		else:
-			teks[i] = ele.lower()
-	pesan = ""
-	for x in range(len(teks)):
-		pesan += teks[x]
-	return pesan
+		teks[i] = ele.upper() if i % 2 != 0 else ele.lower()
+	return "".join(teks)
 
 @app.on_message(Filters.user("self") & Filters.command(["mock"], Command))
 async def mock_spongebob(client, message):
@@ -59,9 +53,7 @@ async def mock_spongebob(client, message):
 	MAX_W, MAX_H = im.size
 	draw = ImageDraw.Draw(im)
 	font = ImageFont.truetype('nana/helpers/IMPACT.TTF', 35)
-	newline = 0
-	for line in para:
-		newline += 1.25
+	newline = sum(1.25 for _ in para)
 	current_h, pad = (MAX_H/1.25)+newline, 6
 	x, y = 3, 3
 	for line in para:
@@ -83,26 +75,25 @@ async def mock_spongebob(client, message):
 
 @app.on_message(Filters.user("self") & Filters.command(["😂"], Command))
 async def haha_emojis(client, message):
-	if message.reply_to_message.message_id:
-		teks = message.reply_to_message.text
-		emojis = ["😂", "😂", "👌", "✌️", "💞", "👍", "👌", "💯", "🎶", "👀", "😂", "👓", "👏", "👐", "🍕", "💥", "🍴", "💦", "💦", "🍑", "🍆", "😩", "😏", "👉👌", "👀", "👅", "😩", "🚰"]
-		reply_text = random.choice(emojis)
-		b_char = random.choice(teks).lower()
-		for c in teks:
-			if c == " ":
-				reply_text += random.choice(emojis)
-			elif c in emojis:
-				reply_text += c
-				reply_text += random.choice(emojis)
-			elif c.lower() == b_char:
-				reply_text += "🅱️"
-			else:
-				if bool(random.getrandbits(1)):
-					reply_text += c.upper()
-				else:
-					reply_text += c.lower()
-		reply_text += random.choice(emojis)
-		await message.edit(reply_text)
+	if not message.reply_to_message.message_id:
+		return
+
+	teks = message.reply_to_message.text
+	emojis = ["😂", "😂", "👌", "✌️", "💞", "👍", "👌", "💯", "🎶", "👀", "😂", "👓", "👏", "👐", "🍕", "💥", "🍴", "💦", "💦", "🍑", "🍆", "😩", "😏", "👉👌", "👀", "👅", "😩", "🚰"]
+	reply_text = random.choice(emojis)
+	b_char = random.choice(teks).lower()
+	for c in teks:
+		if c == " ":
+			reply_text += random.choice(emojis)
+		elif c in emojis:
+			reply_text += c
+			reply_text += random.choice(emojis)
+		elif c.lower() == b_char:
+			reply_text += "🅱️"
+		else:
+			reply_text += c.upper() if bool(random.getrandbits(1)) else c.lower()
+	reply_text += random.choice(emojis)
+	await message.edit(reply_text)
 
 @app.on_message(Filters.user("self") & Filters.command(["mocktxt"], Command))
 async def mock_text(client, message):
@@ -110,8 +101,8 @@ async def mock_text(client, message):
 		teks = message.reply_to_message.text
 		if teks == None:
 			teks = message.reply_to_message.caption
-			if teks == None:
-				return
+		if teks is None:
+			return
 		pesan = await mocking_text(teks)
 		await client.edit_message_text(message.chat.id, message.message_id, pesan)
 
@@ -125,11 +116,8 @@ async def marquee(client, message):
 		maju = True
 	else:
 		maju = False
-	for loop in range(jumlah * 2):
-		if maju:
-			teks = teks[1] + teks[2:] + teks[0]
-		else:
-			teks = teks[-1] + teks[:-1]
+	for _ in range(jumlah * 2):
+		teks = teks[1] + teks[2:] + teks[0] if maju else teks[-1] + teks[:-1]
 		try:
 			await client.edit_message_text(message.chat.id, message.message_id, teks, parse_mode="")
 		except:
@@ -138,21 +126,17 @@ async def marquee(client, message):
 @app.on_message(Filters.user("self") & Filters.command(["2"], Command))
 async def dancedance(client, message):
 	teks = list(message.text[3:])
-	for loop in range(4):
+	for _ in range(4):
 		for i, ele in enumerate(teks):
 			if i % 2 != 0:
 				teks[i] = ele.upper()
-		pesan = ""
-		for x in range(len(teks)):
-			pesan += teks[x]
+		pesan = "".join(teks)
 		await client.edit_message_text(message.chat.id, message.message_id, pesan)
 		teks = list(message.text[3:])
 		for i, ele in enumerate(teks):
 			if i % 2 == 0:
 				teks[i] = ele.upper()
-		pesan = ""
-		for x in range(len(teks)):
-			pesan += teks[x]
+		pesan = "".join(teks)
 		await client.edit_message_text(message.chat.id, message.message_id, pesan)
 		teks = list(message.text[3:])
 	teks = message.text[3:]

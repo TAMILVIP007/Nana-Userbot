@@ -23,31 +23,27 @@ def convert_c(celsius):
 
 @app.on_message(Filters.user("self") & Filters.command(["eval"], Command))
 async def evaluation(client, message):
-	if len(message.text.split()) == 1:
-		await message.edit("Usage: `eval 1000-7`")
-		return
-	q = message.text.split(None, 1)[1]
-	try:
-		ev = str(eval(q))
-		if ev:
-			if len(ev) >= 4096:
-				file = open("nana/cache/output.txt", "w+")
-				file.write(ev)
-				file.close()
-				await client.send_file(message.chat.id, "nana/cache/output.txt", caption="`Output too large, sending as file`")
-				os.remove("nana/cache/output.txt")
-				return
-			else:
-				await message.edit("**Query:**\n{}\n\n**Result:**\n`{}`".format(q, ev))
-				return
-		else:
-			await message.edit("**Query:**\n{}\n\n**Result:**\n`None`".format(q))
-			return
-	except:
-		exc_type, exc_obj, exc_tb = sys.exc_info()
-		errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
-		await message.edit("Error: `{}`".format("".join(errors)))
-		logging.exception("Evaluation error")
+    if len(message.text.split()) == 1:
+    	await message.edit("Usage: `eval 1000-7`")
+    	return
+    q = message.text.split(None, 1)[1]
+    try:
+        if ev := str(eval(q)):
+            if len(ev) >= 4096:
+                with open("nana/cache/output.txt", "w+") as file:
+                    file.write(ev)
+                await client.send_file(message.chat.id, "nana/cache/output.txt", caption="`Output too large, sending as file`")
+                os.remove("nana/cache/output.txt")
+            else:
+                await message.edit("**Query:**\n{}\n\n**Result:**\n`{}`".format(q, ev))
+        else:
+            await message.edit("**Query:**\n{}\n\n**Result:**\n`None`".format(q))
+        return
+    except:
+    	exc_type, exc_obj, exc_tb = sys.exc_info()
+    	errors = traceback.format_exception(etype=exc_type, value=exc_obj, tb=exc_tb)
+    	await message.edit("Error: `{}`".format("".join(errors)))
+    	logging.exception("Evaluation error")
 
 
 @app.on_message(Filters.user("self") & Filters.command(["curr"], Command))

@@ -47,9 +47,7 @@ async def callback_dl(current, total, chat_id, message, client, is_mirror=False,
 			await message.edit("__[{}] Downloading...__".format("{:.1f}%".format(current * 100 / total)))
 		except Exception as err:
 			print("Error: failed to edit message: " + str(err))
-		print("{:.1f}%".format(current * 100 / total))
-	else:
-		print("{:.1f}%".format(current * 100 / total))
+	print("{:.1f}%".format(current * 100 / total))
 
 async def download_url(message, url, file_name, is_mirror=False):
 	start = int(time.time())
@@ -59,12 +57,12 @@ async def download_url(message, url, file_name, is_mirror=False):
 	try:
 		downloader.start(blocking=False)
 	except HTTPError as e:
-		return await message.edit(f"`Err: {str(e)}`")
+		return await message.edit(f'`Err: {e}`')
 	c_time = time.time()
 	CURRENT_COUNTER[file_name] = 0
 	while not downloader.isFinished() and downloader.get_status() == "downloading":
 		status = downloader.get_status().capitalize()
-		total_length = downloader.filesize if downloader.filesize else None
+		total_length = downloader.filesize or None
 		downloaded = downloader.get_dl_size()
 		diff = time.time() - c_time
 		percentage = "{:.1f}%".format(downloader.get_progress() * 100)
@@ -140,8 +138,7 @@ async def download_from_url(client, message):
 	except FileNotFoundError:
 		await message.edit("Invalid download path in config!")
 		return
-	is_mega = re.findall(r'\bhttps?://.*mega.*\.nz\S+', URL)
-	if is_mega:
+	if is_mega := re.findall(r'\bhttps?://.*mega.*\.nz\S+', URL):
 		await mega_downlaoder(message, is_mega[0], file_name=file_name if len(message.text.split()) >= 3 else None)
 		return
 	download = await download_url(message, URL, file_name)

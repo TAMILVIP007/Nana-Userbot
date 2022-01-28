@@ -32,7 +32,7 @@ async def time_parser(start, end):
 		times += "{} minutes, ".format(minutes)
 	if seconds:
 		times += "{} seconds".format(seconds)
-	if times == "":
+	if not times:
 		times = "{} miliseconds".format(time_end)
 	return times
 
@@ -57,9 +57,7 @@ async def callback_send(current, total, chat_id, message, client):
 			await message.edit("__[{}] Uploading...__".format("{:.1f}%".format(current * 100 / total)))
 		except Exception as err:
 			print("Error: failed to edit message: " + str(err))
-		print("{:.1f}%".format(current * 100 / total))
-	else:
-		print("{:.1f}%".format(current * 100 / total))
+	print("{:.1f}%".format(current * 100 / total))
 
 
 
@@ -79,11 +77,10 @@ async def StickerUploader(client, message):
 		else:
 			await send_sticker(message.chat.id, "nana/cache/stiker.png")
 		os.remove("nana/cache/stiker.png")
+	elif message.reply_to_message:
+		await send_sticker(message.chat.id, photo, reply_to_message_id=message.reply_to_message.message_id)
 	else:
-		if message.reply_to_message:
-			await send_sticker(message.chat.id, photo, reply_to_message_id=message.reply_to_message.message_id)
-		else:
-			await send_sticker(message.chat.id, photo)
+		await send_sticker(message.chat.id, photo)
 
 @app.on_message(Filters.user("self") & Filters.command(["pic"], Command))
 async def PictureUploader(client, message):
@@ -101,11 +98,10 @@ async def PictureUploader(client, message):
 		else:
 			await client.send_photo(message.chat.id, "nana/cache/pic.png")
 		os.remove("nana/cache/pic.png")
+	elif message.reply_to_message:
+		await client.send_photo(message.chat.id, photo, caption, reply_to_message_id=message.reply_to_message.message_id)
 	else:
-		if message.reply_to_message:
-			await client.send_photo(message.chat.id, photo, caption, reply_to_message_id=message.reply_to_message.message_id)
-		else:
-			await client.send_photo(message.chat.id, photo, caption)
+		await client.send_photo(message.chat.id, photo, caption)
 
 @app.on_message(Filters.user("self") & Filters.command(["send"], Command))
 async def SendFiles(client, message):
@@ -187,7 +183,7 @@ async def sendit(client, message, ftype, path, file_name=False):
 			await message.edit("Error: " + str(err))
 			return
 	elif ftype.lower() == "url":
-		file_name = file_name if file_name else path.split("/")[-1].split("?")[0]
+		file_name = file_name or path.split("/")[-1].split("?")[0]
 		await message.edit(f"__Downloading {file_name}...__")
 		isdone, ret = await download_url(path, file_name)
 		if not isdone:

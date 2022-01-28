@@ -77,10 +77,7 @@ def get_note_type(msg):
 		return None, None, None, None, None
 	data_type = None
 	content = None
-	if msg.text:
-		raw_text = msg.text.markdown
-	else:
-		raw_text = msg.caption.markdown
+	raw_text = msg.text.markdown if msg.text else msg.caption.markdown
 	args = raw_text.split(None, 2)  # use python's maxsplit to separate cmd and args
 	note_name = args[1]
 
@@ -256,74 +253,60 @@ def fetch_note_type(msg):
 	note_name = None
 	text = None
 
-	# determine what the contents of the filter are - text, image, sticker, etc
-	if msg:
-		if msg.text:
-			text = msg.text.markdown
-		elif msg.caption:
-			text = msg.caption.markdown
-		else:
-			text = ""
-		if msg.text:
-			data_type = Types.TEXT
-
-		elif msg.sticker:
-			content = msg.sticker.file_id
-			file_ref = msg.sticker.file_ref
-			data_type = Types.STICKER
-
-		elif msg.document:
-			if msg.document.mime_type == "application/x-bad-tgsticker":
-				data_type = Types.ANIMATED_STICKER
-			else:
-				data_type = Types.DOCUMENT
-			content = msg.document.file_id
-			file_ref = msg.document.file_ref
-
-		elif msg.photo:
-			content = msg.photo.file_id
-			file_ref = msg.photo.file_ref
-			data_type = Types.PHOTO
-
-		elif msg.audio:
-			content = msg.audio.file_id
-			file_ref = msg.audio.file_ref
-			data_type = Types.AUDIO
-
-		elif msg.voice:
-			content = msg.voice.file_id
-			file_ref = msg.voice.file_ref
-			data_type = Types.VOICE
-
-		elif msg.video:
-			content = msg.video.file_id
-			file_ref = msg.video.file_ref
-			data_type = Types.VIDEO
-
-		elif msg.video_note:
-			content = msg.video_note.file_id
-			file_ref = msg.video_note.file_ref
-			data_type = Types.VIDEO_NOTE
-
-		elif msg.animation:
-			content = msg.animation.file_id
-			file_ref = msg.animation.file_ref
-			# text = None
-			data_type = Types.ANIMATION
-
-		# TODO
-		# elif msg.contact:
-		# 	content = msg.contact.phone_number
-		# 	# text = None
-		# 	data_type = Types.CONTACT
-
-		# TODO
-		# elif msg.animated_sticker:
-		#	content = msg.animation.file_id
-		#	text = None
-		#	data_type = Types.ANIMATED_STICKER
-
-	else:
+	if not msg:
 		return None, None, None, None, None
+
+	if msg.text:
+		text = msg.text.markdown
+	elif msg.caption:
+		text = msg.caption.markdown
+	else:
+		text = ""
+	if msg.text:
+		data_type = Types.TEXT
+
+	elif msg.sticker:
+		content = msg.sticker.file_id
+		file_ref = msg.sticker.file_ref
+		data_type = Types.STICKER
+
+	elif msg.document:
+		if msg.document.mime_type == "application/x-bad-tgsticker":
+			data_type = Types.ANIMATED_STICKER
+		else:
+			data_type = Types.DOCUMENT
+		content = msg.document.file_id
+		file_ref = msg.document.file_ref
+
+	elif msg.photo:
+		content = msg.photo.file_id
+		file_ref = msg.photo.file_ref
+		data_type = Types.PHOTO
+
+	elif msg.audio:
+		content = msg.audio.file_id
+		file_ref = msg.audio.file_ref
+		data_type = Types.AUDIO
+
+	elif msg.voice:
+		content = msg.voice.file_id
+		file_ref = msg.voice.file_ref
+		data_type = Types.VOICE
+
+	elif msg.video:
+		content = msg.video.file_id
+		file_ref = msg.video.file_ref
+		data_type = Types.VIDEO
+
+	elif msg.video_note:
+		content = msg.video_note.file_id
+		file_ref = msg.video_note.file_ref
+		data_type = Types.VIDEO_NOTE
+
+	elif msg.animation:
+		content = msg.animation.file_id
+		file_ref = msg.animation.file_ref
+		# text = None
+		data_type = Types.ANIMATION
 
 	return note_name, text, data_type, content, file_ref

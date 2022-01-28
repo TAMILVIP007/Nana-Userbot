@@ -42,7 +42,7 @@ async def download_url_multi(url, file_name):
 		return False, str(e)
 	while not downloader.isFinished() and downloader.get_status() == "downloading":
 		eta = round(downloader.get_eta())
-		await asyncio.sleep(eta if eta else 1)
+		await asyncio.sleep(eta or 1)
 		if status == "Combining":
 			wait = round(downloader.get_eta())
 			await asyncio.sleep(wait)

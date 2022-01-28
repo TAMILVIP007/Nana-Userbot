@@ -11,8 +11,6 @@ def deldog(data):
 		update.effective_message.reply_text(res['message'])
 		r.raise_for_status()
 	key = res['key']
-	if res['isUrl']:
-		reply = f'Shortened URL: {BASE_URL}/{key}\nYou can view stats, etc. [here]({BASE_URL}/v/{key})'
-	else:
-		reply = f'{BASE_URL}/{key}'
-	return reply
+	return (
+	    f'Shortened URL: {BASE_URL}/{key}\nYou can view stats, etc. [here]({BASE_URL}/v/{key})'
+	    if res['isUrl'] else f'{BASE_URL}/{key}')

@@ -72,7 +72,5 @@ async def sid_shortlink(client, message):
 	get_json = get.json()
 	if get.status_code == 200:
 		await message.edit("**Shortlink created!**\n**Original link:** {}\n**Shorted link:** https://s.id/{}".format(target_url, get_json['short']))
-	elif get.status_code == 200 and not get_json['success']:
-		await message.edit("**Error!**\n{}".format(", ".join(get_json['errors']['url'])))
 	else:
 		await message.edit("**Error:**\n{}\n\n{}".format(get_json['message'], get_json['description']))

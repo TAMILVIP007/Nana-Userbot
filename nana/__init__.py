@@ -35,14 +35,10 @@ else:
 		quit(1)
 	TEST_DEVELOP = Config.TEST_MODE
 
+logging.basicConfig(level=logging.WARNING)
+log = logging.getLogger()
 if TEST_DEVELOP:
-	logging.basicConfig(level=logging.WARNING)
-	log = logging.getLogger()
 	log.warning("Testing mode activated!")
-else:
-	logging.basicConfig(level=logging.WARNING)
-	log = logging.getLogger()
-
 # if version < 3.6, stop bot.
 if sys.version_info[0] < 3 or sys.version_info[1] < 6:
     log.error("You MUST have a python version of at least 3.6! Multiple features depend on this. Bot quitting.")
@@ -60,7 +56,6 @@ if ENV:
 	# Version
 	lang_code = os.environ.get('lang_code', "en")
 	device_model = os.environ.get('device_model', "PC")
-	app_version = "💝 Nana v{}".format(USERBOT_VERSION)
 	system_version = os.environ.get('system_version', "Linux")
 
 	# Must be filled
@@ -70,21 +65,11 @@ if ENV:
 	# Session
 	USERBOT_SESSION = os.environ.get('USERBOT_SESSION', None)
 
-	# Required for some features
-	# Set temp var for load later
-	Owner = 0
-	OwnerName = ""
-	OwnerUsername = ""
-	BotID = 0
-	BotName = ""
-	BotUsername = ""
 	# From config
 	Command = os.environ.get("Command", "! . - ^").split()
 	NANA_WORKER = int(os.environ.get('NANA_WORKER', 8))
 
-	# Write google api strings
-	Drivestr = os.environ.get("GOOGLE_API_TEXT", "")
-	if Drivestr:
+	if Drivestr := os.environ.get("GOOGLE_API_TEXT", ""):
 		open("client_secrets.json", "w").write(str(Drivestr))
 
 	# Bitly API
@@ -92,8 +77,7 @@ if ENV:
 	lydia_API = os.environ.get("lydia_API", "")
 
 	try:
-		TEST_DEVELOP = bool(os.environ.get('TEST_DEVELOP', False))
-		if TEST_DEVELOP:
+		if TEST_DEVELOP := bool(os.environ.get('TEST_DEVELOP', False)):
 			APP_SESSION = os.environ.get('APP_SESSION', None)
 		else:
 			raise AttributeError
@@ -116,7 +100,6 @@ else:
 	# Version
 	lang_code = Config.lang_code
 	device_model = Config.device_model
-	app_version = "💝 Nana v{}".format(USERBOT_VERSION)
 	system_version = Config.system_version
 
 	# Must be filled
@@ -126,21 +109,11 @@ else:
 	# Session
 	USERBOT_SESSION = Config.USERBOT_SESSION
 
-	# Required for some features
-	# Set temp var for load later
-	Owner = 0
-	OwnerName = ""
-	OwnerUsername = ""
-	BotID = 0
-	BotName = ""
-	BotUsername = ""
 	# From config
 	Command = Config.Command
 	NANA_WORKER = Config.NANA_WORKER
 
-	# Write google api strings
-	Drivestr = Config.GOOGLE_API_TEXT
-	if Drivestr:
+	if Drivestr := Config.GOOGLE_API_TEXT:
 		open("client_secrets.json", "w").write(str(Drivestr))
 
 	# Bitly API
@@ -148,8 +121,7 @@ else:
 	lydia_API = Config.lydia_API
 
 	try:
-		TEST_DEVELOP = Config.TEST_DEVELOP
-		if TEST_DEVELOP:
+		if TEST_DEVELOP := Config.TEST_DEVELOP:
 			APP_SESSION = Config.APP_SESSION
 		else:
 			raise AttributeError
@@ -168,6 +140,15 @@ else:
 	REMINDER_UPDATE = Config.REMINDER_UPDATE
 	TEST_MODE = Config.TEST_MODE
 
+# Required for some features
+# Set temp var for load later
+Owner = 0
+BotID = 0
+BotName = ""
+OwnerName = ""
+app_version = "💝 Nana v{}".format(USERBOT_VERSION)
+OwnerUsername = ""
+BotUsername = ""
 if USERBOT_SESSION:
 	APP_SESSION = USERBOT_SESSION
 
@@ -192,12 +173,10 @@ async def get_self():
 	global Owner, OwnerName, OwnerUsername, AdminSettings
 	getself = await app.get_me()
 	Owner = getself.id
-	if getself.last_name:
-		OwnerName = getself.first_name + " " + getself.last_name
-	else:
-		OwnerName = getself.first_name
-	OwnerUsername = getself.username
 	if not TEST_DEVELOP:
+		OwnerName = (getself.first_name + " " + getself.last_name
+		             if getself.last_name else getself.first_name)
+		OwnerUsername = getself.username
 		print("Welcome: {}".format(OwnerName))
 
 BASE = declarative_base()

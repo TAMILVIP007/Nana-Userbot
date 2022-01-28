@@ -3,8 +3,7 @@ import re
 
 def cleanhtml(raw_html):
 	cleanr = re.compile('<.*?>')
-	cleantext = re.sub(cleanr, '', raw_html)
-	return cleantext
+	return re.sub(cleanr, '', raw_html)
 
 def escape_markdown(text):
 	"""Helper function to escape telegram markup symbols."""

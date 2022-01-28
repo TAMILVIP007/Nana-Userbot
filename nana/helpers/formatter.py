@@ -30,7 +30,7 @@ def time_parser(start, end):
 		times += "{} minutes, ".format(minutes)
 	if seconds:
 		times += "{} seconds".format(seconds)
-	if times == "":
+	if not times:
 		times = "{} miliseconds".format(time_end)
 	return times
 
@@ -51,7 +51,7 @@ def time_parser_int(time_end):
 		times += "{} minutes, ".format(minutes)
 	if seconds:
 		times += "{} seconds".format(seconds)
-	if times == "":
+	if not times:
 		times = "{} miliseconds".format(time_end)
 	return times
 

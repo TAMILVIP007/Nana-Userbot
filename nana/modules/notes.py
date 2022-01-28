@@ -76,10 +76,7 @@ async def get_note(client, message):
 	if getnotes['type'] == Types.TEXT:
 		teks, button = parse_button(getnotes.get('value'))
 		button = build_keyboard(button)
-		if button:
-			button = InlineKeyboardMarkup(button)
-		else:
-			button = None
+		button = InlineKeyboardMarkup(button) if button else None
 		if button:
 			await message.edit("Inline button not supported in this userbot version :(\nSee @AyraSupport for more information")
 			return
@@ -105,10 +102,7 @@ async def get_note(client, message):
 		if getnotes.get('value'):
 			teks, button = parse_button(getnotes.get('value'))
 			button = build_keyboard(button)
-			if button:
-				button = InlineKeyboardMarkup(button)
-			else:
-				button = None
+			button = InlineKeyboardMarkup(button) if button else None
 		else:
 			teks = None
 			button = None

@@ -36,10 +36,9 @@ async def pic(chat, photo, caption=None):
 
 async def aexec(client, message, code):
 	# Make an async function with the code and `exec` it
-	exec(
-		f'async def __ex(client, message): ' +
-		''.join(f'\n {l}' for l in code.split('\n'))
-	)
+	exec((
+	    'async def __ex(client, message): ' + ''.join(f'\n {l}'
+	                                                  for l in code.split('\n'))))
 
 	# Get `__ex` from local variables, call it and return the result
 	return await locals()['__ex'](client, message)
@@ -109,9 +108,8 @@ async def terminal(client, message):
 		output = None
 	if output:
 		if len(output) > 4096:
-			file = open("nana/cache/output.txt", "w+")
-			file.write(output)
-			file.close()
+			with open("nana/cache/output.txt", "w+") as file:
+				file.write(output)
 			await client.send_document(message.chat.id, "nana/cache/output.txt", reply_to_message_id=message.message_id, caption="`Output file`")
 			os.remove("nana/cache/output.txt")
 			return
@@ -132,11 +130,10 @@ async def dc_id(client, message):
 	chat = message.chat
 	user = message.from_user
 	if message.reply_to_message:
+		dc_id = message.reply_to_message.from_user.dc_id
 		if message.reply_to_message.forward_from:
-			dc_id = message.reply_to_message.from_user.dc_id
 			user = mention_markdown(message.reply_to_message.forward_from.id, message.reply_to_message.forward_from.first_name)
 		else:
-			dc_id = message.reply_to_message.from_user.dc_id
 			user = mention_markdown(message.reply_to_message.from_user.id, message.reply_to_message.from_user.first_name)
 	else:
 		dc_id = message.from_user.dc_id

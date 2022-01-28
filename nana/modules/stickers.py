@@ -55,9 +55,10 @@ async def kang_stickers(client, message):
 	else:
 		await message.edit("Reply a sticker or photo to kang it!\nCurrent sticker pack is: {}\nCurrent animation pack is: {}".format(sticker_pack, animation_pack.sticker))
 		return
-	if not (message.reply_to_message.sticker and message.reply_to_message.sticker.mime_type) == "application/x-tgsticker":
+	if ((message.reply_to_message.sticker
+	     and message.reply_to_message.sticker.mime_type)
+	    ) != "application/x-tgsticker":
 		im = Image.open("nana/cache/sticker.png")
-		maxsize = (512, 512)
 		if (im.width and im.height) < 512:
 			size1 = im.width
 			size2 = im.height
@@ -74,9 +75,10 @@ async def kang_stickers(client, message):
 			sizenew = (size1new, size2new)
 			im = im.resize(sizenew)
 		else:
+			maxsize = (512, 512)
 			im.thumbnail(maxsize)
 		im.save("nana/cache/sticker.png", 'PNG')
-		
+
 	await client.send_message("@Stickers", "/addsticker")
 	await client.read_history("@Stickers")
 	time.sleep(0.2)
@@ -104,7 +106,7 @@ async def kang_stickers(client, message):
 			ic = message.reply_to_message.sticker.emoji
 		except:
 			ic = "🤔"
-	if ic == None:
+	if ic is None:
 		ic = "🤔"
 	await client.send_message("@Stickers", ic)
 	await client.read_history("@Stickers")

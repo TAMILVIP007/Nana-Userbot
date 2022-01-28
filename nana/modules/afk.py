@@ -46,9 +46,9 @@ async def afk_mentioned(client, message):
 		else:
 			cid = str(message.chat.id)
 
-		if cid in list(AFK_RESTIRECT):
-			if int(AFK_RESTIRECT[cid]) >= int(time.time()):
-				return
+		if cid in list(AFK_RESTIRECT) and int(AFK_RESTIRECT[cid]) >= int(
+		    time.time()):
+			return
 		AFK_RESTIRECT[cid] = int(time.time()) + DELAY_TIME
 		if get['reason']:
 			await message.reply("Sorry, {} is AFK!\nBecause of {}".format(mention_markdown(Owner, OwnerName), get['reason']))
@@ -57,10 +57,7 @@ async def afk_mentioned(client, message):
 
 		content, message_type = get_message_type(message)
 		if message_type == Types.TEXT:
-			if message.text:
-				text = message.text
-			else:
-				text = message.caption
+			text = message.text or message.caption
 		else:
 			text = message_type.name
 

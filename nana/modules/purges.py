@@ -28,10 +28,11 @@ async def purge(client, message):
                                             revoke=True)
                 purged_messages_count += len(list_of_messages_to_delete)
                 list_of_messages_to_delete = []
-            if from_user is not None:
-                if a_message.from_user == from_user:
-                    list_of_messages_to_delete.append(a_message.message_id)
-            else:
+            if (
+                from_user is not None
+                and a_message.from_user == from_user
+                or from_user is None
+            ):
                 list_of_messages_to_delete.append(a_message.message_id)
         await client.delete_messages(chat_id=message.chat.id,
                                     message_ids=list_of_messages_to_delete,
@@ -39,10 +40,10 @@ async def purge(client, message):
         purged_messages_count += len(list_of_messages_to_delete)
         end_t = datetime.now()
         time_taken_s = (end_t - start_t).seconds
-        await message.delete()
     else:
         out = "Reply to a message to to start purge."
-        await message.delete()
+
+    await message.delete()
 
 
 @app.on_message(Filters.me & Filters.command(["purgeme"], Command))
@@ -65,7 +66,7 @@ async def purge_myself(client, message):
         semua = listall
         jarak = 0
         jarak2 = 0
-        for x in range(math.ceil(len(listall) / 100)):
+        for _ in range(math.ceil(len(semua) / 100)):
             if total >= 101:
                 jarak2 += 100
                 await client.delete_messages(message.chat.id, message_ids=semua[jarak:jarak2])

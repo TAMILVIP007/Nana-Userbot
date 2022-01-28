@@ -37,9 +37,7 @@ def set_lydia(user_id, enable):
 
 def get_lydia(user_id):
 	try:
-		# return LydiaAI
-		check = SESSION.query(LydiaAI).get(int(user_id))
-		if check:
+		if check := SESSION.query(LydiaAI).get(int(user_id)):
 			return check.is_enable
 		return False
 	finally:
